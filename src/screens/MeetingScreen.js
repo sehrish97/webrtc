@@ -1,19 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import { Box } from "@mui/system";
 const socket = io.connect("/");
 const MeetingScreen = () => {
-  const servers = {
-    iceServers: [
-      {
-        urls: [
-          "stun:stun1.l.google.com:19302",
-          "stun:stun2.l.google.com:19302",
-        ], // free STUN servers provided by Google
-      },
-    ],
-    iceCandidatePoolSize: 10,
-  };
+
   const [callEnded, setCallEnded] = useState(false);
   const myVideo = useRef();
   const userVideo = useRef();
@@ -62,7 +53,7 @@ const MeetingScreen = () => {
       connectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
     });
     const constraints = {
-      Audio: true,
+      audio: true,
       video: true,
     };
     navigator.mediaDevices
@@ -94,6 +85,7 @@ const MeetingScreen = () => {
     _pc.onclose = (e) => {
       console.log(e, "disconnected");
       userVideo.current.srcObject = null;
+      window.location.reload()
     };
     connectionRef.current = _pc;
   }, []);
@@ -113,12 +105,10 @@ const MeetingScreen = () => {
         offerToReceiveAudio: true,
         offerToReceiveVideo: true,
         iceRestart: true,
-        iceRestart: true,
         signalingState: true,
       })
       .then((stream) => {
         processSDP(stream);
-        // setOfferVisible(false);
         setstatus("Calling ....");
       })
       .catch((e) => console.log(e, "error.............."));
@@ -203,13 +193,12 @@ const MeetingScreen = () => {
   }
   const dumpOptionsInfo=()=>{
     const videoTrack = screenSharingRef.current.srcObject.getVideoTracks()[0];
+    userVideo.current = videoTrack
     console.info("Track settings:");
   console.info(JSON.stringify(videoTrack.getSettings(), null, 2));
   console.info("Track constraints:");
   console.info(JSON.stringify(videoTrack.getConstraints(), null, 2));
   }
-
-
 
   return (
     <>

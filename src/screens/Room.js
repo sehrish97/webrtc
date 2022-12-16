@@ -1,17 +1,19 @@
-import React from 'react'
-import { useParams,useNavigate } from 'react-router-dom'
-const navigate = useNavigate()
+import React, { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
-const create =(props)=>{
-    const {id}=useParams();
-    props.navigate(`/room/:${id}`)
 
+const Room = (props) => {
+    const navigate = useNavigate();
+
+    const createRoom = useCallback(() => {
+        const id = uuid();
+        navigate(`/room/${id}`);
+    }, [])
+
+    return (
+        <button onClick={createRoom}>Create Room</button>
+    );
 }
 
-const Room = () => {
-  return (
-    <div>Room</div>
-  )
-}
 
 export default Room
